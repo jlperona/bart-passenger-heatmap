@@ -40,6 +40,7 @@ See [the README for the preparser](preparser/README.md) for more information on 
 
 The Shiny application takes in the preparser output, as mentioned above.
 It also takes in GIS data in the GeoJSON format that is provided in `geojson/`.
+(For an explanation of the GIS data, see [the GeoJSON README](geojson/README.md).)
 Its output is a heatmap of where the passengers traveled on the network.
 
 The Shiny application does the following:
@@ -86,16 +87,20 @@ These include the following:
 
 * [Batch convert columns to numeric type](https://stackoverflow.com/questions/19146354/batch-convert-columns-to-numeric-type)
 * [Change the index number of a dataframe](https://stackoverflow.com/questions/7567790/change-the-index-number-of-a-dataframe)
-* [Time range input with Hour level detail in shiny)(https://stackoverflow.com/questions/38849674/time-range-input-with-hour-level-detail-in-shiny)
+* [Time range input with Hour level detail in shiny](https://stackoverflow.com/questions/38849674/time-range-input-with-hour-level-detail-in-shiny)
 
 ## Lessons Learned
 
 Two things that I became very familiar with over the course of working on this project:
 
-* Make sure to check that your strings are imported as characters, and not factors, if that's needed. I spent a long time debugging that issue.
-* Make sure you didn't accidentally overwrite your input data. Sometimes you accidentally modify it, even when you didn't mean to
+* Make sure to check that your strings are imported as characters, and not factors, if that's necessary for your logic. I spent a long time debugging that issue.
+* Make sure you didn't accidentally overwrite your input data. Sometimes you accidentally modify it, even when you didn't mean to.
 
 ## Future
 
 For right now, I want to get the sidebar, subsetting, and reactivity working.
-Another idea I had was different types of visualizations, but that's a much further goal.
+The sidebar is useless right now, so giving that a purpose is priority one.
+
+Another idea I had was to create different types of visualizations.
+Exactly what types of visualizations is a very good question.
+That's a reach goal, though.
