@@ -2,7 +2,7 @@ server <- function(input, output, session)
 {
   output$basemap <- renderLeaflet({
     stationIcon <- makeIcon(
-      iconUrl = "./data/icon.png",
+      iconUrl = "./graphics/station-icon.png",
       iconWidth = 16,
       iconHeight = 16,
       iconAnchorX = 8,

@@ -6,10 +6,10 @@ library(rgdal)      # needed for readOGR()
 library(shiny)      # base for shiny application
 
 # bring in station data
-stations <- readOGR(dsn = "./data/stations.geojson")
+stations <- readOGR(dsn = "./geojson/stations.geojson")
 
 # bring in track data and convert columns
-tracks <- readOGR(dsn = "./data/tracks.geojson")
+tracks <- readOGR(dsn = "./geojson/tracks.geojson")
 tracks@data[] <- lapply(tracks@data, as.character)
 tracks@data$id <- as.integer(tracks@data$id)
 
@@ -21,7 +21,7 @@ colnames(data.20181231) <- c("date", "hour", "origin", "destination", "count")
 data.20181231$date <- fastPOSIXct(data.20181231$date, tz = "UTC")
 
 # import graph, remove extra edges, and set weights to 0
-weightedGraph <- read_graph("./data/bart-abbreviations.net",
+weightedGraph <- read_graph("./preparser/network/bart-abbreviations.net",
                             format = "pajek") %>%
   simplify() %>%
   set_edge_attr(name = "weight", value = 0)
