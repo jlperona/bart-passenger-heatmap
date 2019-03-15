@@ -22,13 +22,13 @@ server <- function(input, output, session)
                  icon = stationIcon,
                  popup = stations$name) %>%
       addPolylines(data = tracks,
-                   weight = 7,
+                   weight = 8,
                    opacity = 0.75,
                    color = ~linePalette(tracks@data$count),
                    popup = paste("Station 1: ", tracks@data$full1, "<br>",
                                  "Station 2: ", tracks@data$full2, "<br>",
                                  "Passengers: ", format(tracks@data$count,
-                                                        big.mark = ",",
+                                                        big.mark = ',',
                                                         big.interval = 3)))
   })
 }
