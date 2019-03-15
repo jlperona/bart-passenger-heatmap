@@ -1,25 +1,27 @@
 # Preparser
 
 This Python script preparses BART hourly origin-destination data for use with the Shiny app [`bart-passenger-heatmap`](https://github.com/jlperona/bart-passenger-heatmap).
-This data is available on the [BART website](https://www.bart.gov/about/reports/ridership).
+The BART data is available on [their website](https://www.bart.gov/about/reports/ridership).
 
 ## Background
 
-I created this script to preparse data for [`bart-passenger-heatmap`](https://github.com/jlperona/bart-passenger-heatmap), which I created for a class that I took while in graduate school.
+I created this script to preparse data for [`bart-passenger-heatmap`](https://github.com/jlperona/bart-passenger-heatmap).
+I created that Shiny application for a class that I took while in graduate school.
 
 ### Previous Work
 
 This script is based heavily on my previous work [`bart-hourly-dataset-parser`](https://github.com/jlperona/bart-hourly-dataset-parser), which is licensed under the MIT License.
 That script generates another graph file as its output.
 Unlike that script, this script turns the final output back into a CSV file of the same format as the BART data.
-It still requires a input graph file.
+It still requires a input graph file, though.
 
 ### Reasoning
 
 The preparser takes in [BART hourly-origin-destination data](https://www.bart.gov/about/reports/ridership) that is provided on their website.
 This data is equivalent to a fully-connected graph, where the nodes are the stations, and the edge weights are the number of passengers who traveled between each station.
-This isn't easy to visualize using the BART network.
+Since the number of edges is on the order of `n^2`, this isn't easy to visualize using the BART network.
 Instead, we need to turn these into a graph that only connects adjacent stations.
+This graph has a more manageable number of edges on the order of `n`.
 
 ### Methodology
 
@@ -90,7 +92,7 @@ Adding these would be fairly simple.
 The CSV file which output is written to.
 For what this file looks like, see the [data README](../data/README.md).
 
-### `soo1.csv soo2.csv ...`
+#### `soo1.csv soo2.csv ...`
 
 The CSV files provided by BART on [their website](https://www.bart.gov/about/reports/ridership).
 You can provide as many as you want.
