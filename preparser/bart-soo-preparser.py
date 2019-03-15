@@ -2,7 +2,7 @@ import argparse
 import csv
 import networkx as nx
 
-def valid_type(input):
+def valid_graph_ext(input):
     filetypes = {'net', 'gexf'}
 
     if input.split('.')[input.count('.')].lower() not in filetypes:
@@ -15,12 +15,12 @@ parser = argparse.ArgumentParser(
     description = 'Take in BART origin-destination data and a source graph. Output a CSV file that gives passengers between adjacent stations.')
 
 # mandatory/positional arguments
-parser.add_argument('inputfile', type = valid_type, metavar = 'input.[gexf,net]',
+parser.add_argument('inputfile', type = valid_graph_ext, metavar = 'input.[gexf,net]',
     help = 'Graph to use as the basis. Supports GEXF and Pajek NET. Format will be guessed from the file extension.')
 parser.add_argument('outputfile', metavar = 'output.csv',
     help = 'CSV file to write the final results to.')
-parser.add_argument('csvfile', nargs = argparse.REMAINDER, metavar = 'input.csv',
-    help = 'BART origin-destination data to read from. Accepts multiple files, parses and writes in order.')
+parser.add_argument('csvfile', nargs = argparse.REMAINDER, metavar = '...',
+    help = 'BART origin-destination data files to read from. Accepts multiple files, parses and writes in order.')
 
 # optional arguments
 parser.add_argument('-d', '--directed', action = 'store_true',
