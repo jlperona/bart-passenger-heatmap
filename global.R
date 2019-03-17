@@ -2,7 +2,7 @@
 
 library(data.table) # fast CSV import using fread()
 library(fasttime)   # needed for fastPOSIXct() to convert dates quickly
-library(rgdal)      # needed for readOGR() to create spatial data
+library(rgdal)      # needed for readOGR() to import spatial data
 
 # bring in station data
 stations <- readOGR(dsn = "./geojson/stations.geojson")

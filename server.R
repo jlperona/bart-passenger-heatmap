@@ -1,6 +1,7 @@
 # code to create the data to be rendered
 
 library(data.table) # fast CSV import using fread()
+library(fasttime)   # needed for fastPOSIXct() to convert dates quickly
 library(leaflet)    # base for shiny map display
 
 server <- function(input, output, session)
@@ -8,21 +9,24 @@ server <- function(input, output, session)
   # reactive that is recalculated whenever the update button is pressed
   # it's also calculated when the app is originally opened
   passengerData <- reactive({
-    
+
+    # have to specify UTC here since we're using fastPOSIXct()
+    startDate <- fastPOSIXct(input$dateRange[1], tz = "UTC")
+    endDate <- fastPOSIXct(input$dateRange[2], tz = "UTC")
+
     # subset by date-time specified by user
     # data.table allows referencing column by name only
-    # have to specify UTC here since we used fastPOSIXct() earlier
-    trackCount <- soo[date >= as.POSIXct(input$dateRange[1], tz = "UTC") &
-                      date <= as.POSIXct(input$dateRange[2], tz = "UTC") &
+    trackCount <- soo[date >= startDate &
+                      date <= endDate &
                       hour %in% as.integer(input$timeRange)]
-    
+
     # aggregate subset together by edge and fix column names
     trackCount <- aggregate(trackCount$count,
                             by = list(trackCount$origin,
                                       trackCount$destination),
                             FUN = sum)
     colnames(trackCount) <- c("station1", "station2", "count")
-    
+
     # paste together station names both ways
     # we need to merge this data with the track data
     # we don't necessarily know which order of names in the track data is correct
@@ -35,7 +39,7 @@ server <- function(input, output, session)
                               sep = '-')
     result1 <- trackCount[ , which(names(trackCount) %in% c("name1", "count"))]
     result2 <- trackCount[ , which(names(trackCount) %in% c("name2", "count"))]
-    
+
     # merge on both name orders and bind results together
     result1 <- merge(x = tracks@data,
                      y = result1,
@@ -58,19 +62,19 @@ server <- function(input, output, session)
                         stationLookup,
                         by.x = "station2",
                         by.y = "abbreviation")
-    
+
     # order by ID
     tracks@data <- trackCount[order(trackCount$id), ]
     rownames(tracks@data) <- 1:nrow(tracks@data)
-    
-    # return final result 
+
+    # return final result
     tracks
   })
-  
+
   # render basemap that will never change
   # only the track data changes, so we don't need to make this reactive
   output$basemap <- renderLeaflet({
-    
+
     # render station icons in similar vein to actual BART map
     stationIcon <- makeIcon(
       iconUrl = "./graphics/station-icon.png",
@@ -88,45 +92,59 @@ server <- function(input, output, session)
                  icon = stationIcon,
                  popup = stations$name)
   })
-  
+
   # run this code when first booting the app
   # also run every time the update button is pressed
   observeEvent(input$updateDatetime,
-               ignoreNULL = FALSE, {
-                 
-    # taken from Shiny validation article
-    # https://shiny.rstudio.com/articles/validation.html
-    `%then%` <- shiny:::`%OR%`     
-    
-    # validate user choices so they don't crash the app
-    # use %then% so only one is shown at a time
-    validate(
-      need(input$dateRange[2] >= input$dateRange[1], 
-          "The end date must be after or equal to the starting date.") %then%
-      need(input$timeRange,
-          "You must select at least one hour.")
-    )
-                 
-    # palette color choice courtesy of the SuperZIP example
-    # https://github.com/rstudio/shiny-examples/blob/master/063-superzip-example/server.R
-    linePalette <- colorNumeric(
-      palette = "viridis",
-      domain = passengerData()@data$count
-    )
-    
-    # send commands to running map instance
-    leafletProxy("basemap") %>%
-      # clear previous rendered track data
-      clearShapes() %>%
-      # render popups and tracks, which are colored by input data
-      addPolylines(data = passengerData(),
-                   weight = 8,
-                   opacity = 0.75,
-                   color = ~linePalette(passengerData()@data$count),
-                   popup = paste("Station 1: ", passengerData()@data$full1, "<br>",
-                                 "Station 2: ", passengerData()@data$full2, "<br>",
-                                 "Passengers: ", format(passengerData()@data$count,
-                                                        big.mark = ',',
-                                                        big.interval = 3)))
+               ignoreNULL = FALSE,
+               ignoreInit = FALSE, {
+
+    # have to specify UTC here since we're using fastPOSIXct()
+    startDate <- fastPOSIXct(input$dateRange[1], tz = "UTC")
+    endDate <- fastPOSIXct(input$dateRange[2], tz = "UTC")
+
+    # check if end date is earlier than start date
+    # display pop-up to warn user and don't re-render track if this is the case
+    if(endDate < startDate) {
+      showModal(modalDialog(
+        title = "Error",
+        "The end date must be the same as or after the starting date.",
+        easyClose = TRUE,
+        footer = NULL
+      ))
+    }
+    # check if there are no times in time range
+    # display pop-up to warn user and don't re-render track if this is the case
+    else if(is.null(input$timeRange)) {
+      showModal(modalDialog(
+        title = "Error",
+        "You must select at least one hour.",
+        easyClose = TRUE,
+        footer = NULL
+      ))
+    }
+    # if user inputs are valid, re-render palette and track
+    else {
+      # palette color choice courtesy of the Shiny SuperZIP example
+      linePalette <- colorNumeric(
+        palette = "viridis",
+        domain = passengerData()@data$count
+      )
+
+      # send commands to running map instance
+      leafletProxy("basemap") %>%
+        # clear previous rendered track data
+        clearShapes() %>%
+        # render popups and tracks, which are colored by input data
+        addPolylines(data = passengerData(),
+                     weight = 8,
+                     opacity = 0.75,
+                     color = ~linePalette(passengerData()@data$count),
+                     popup = paste("Station 1: ", passengerData()@data$full1, "<br>",
+                                   "Station 2: ", passengerData()@data$full2, "<br>",
+                                   "Passengers: ", format(passengerData()@data$count,
+                                                          big.mark = ',',
+                                                          big.interval = 3)))
+    }
   })
 }

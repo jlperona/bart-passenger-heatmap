@@ -23,7 +23,7 @@ I needed to use R, so this was a reasonable choice.
 
 For true heatmapping purposes, using the actual track data isn't the best since tracks vary in size.
 This is visible on the current track data.
-A stylized version, like the [BART system map](https://www.bart.gov/system-map), would probably be better. 
+A stylized version, like the [BART system map](https://www.bart.gov/system-map), would probably be better.
 
 ### Methodology
 
@@ -77,21 +77,22 @@ The references for the following packages proved invaluable to getting this work
 Many of the [Shiny examples](https://github.com/rstudio/shiny-examples) were helpful for demonstrating different aspects of Shiny.
 In particular, I used the following:
 
-* [`007-widgets`](https://github.com/rstudio/shiny-examples/tree/master/007-widgets) to create the `checkboxGroup`
+* [`007-widgets`](https://github.com/rstudio/shiny-examples/tree/master/007-widgets) to create the `checkboxGroupInput`
 * [`028-actionbutton-demo`](https://github.com/rstudio/shiny-examples/tree/master/028-actionbutton-demo) to create the `actionButton`
 * [`035-custom-input-bindings`](https://github.com/rstudio/shiny-examples/tree/master/035-custom-input-bindings) to create the `actionButton`
 * [`037-date-and-date-range`](https://github.com/rstudio/shiny-examples/tree/master/037-date-and-date-range) to create the `dateRangeInput`
 * [`063-superzip-example`](https://github.com/rstudio/shiny-examples/tree/master/063-superzip-example) to understand how reactives work
-* [`081-widgets-gallery`](https://github.com/rstudio/shiny-examples/tree/master/081-widgets-gallery) to understand how reactives work 
+* [`081-widgets-gallery`](https://github.com/rstudio/shiny-examples/tree/master/081-widgets-gallery) to understand how reactives work
 
 ### Stack Overflow
 
-Finally, I utilized a few posts on [StackOverflow](https://stackoverflow.com/) to answer some questions that I had.
+Finally, I utilized quite a few posts on [StackOverflow](https://stackoverflow.com/) to answer some questions that I had.
 These include the following:
 
 * [Batch convert columns to numeric type](https://stackoverflow.com/questions/19146354/batch-convert-columns-to-numeric-type)
 * [Centering a plot within a fluidRow in Shiny](https://stackoverflow.com/questions/25147216/centering-a-plot-within-a-fluidrow-in-shiny)
 * [Change the index number of a dataframe](https://stackoverflow.com/questions/7567790/change-the-index-number-of-a-dataframe)
+* [r shiny: How to print a message in the app after the user forgets to upload a file?](https://stackoverflow.com/questions/48525909/r-shiny-how-to-print-a-message-in-the-app-after-the-user-forgets-to-upload-a-fi)
 * [Time range input with Hour level detail in shiny](https://stackoverflow.com/questions/38849674/time-range-input-with-hour-level-detail-in-shiny)
 
 ### Other References
