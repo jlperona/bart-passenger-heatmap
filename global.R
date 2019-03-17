@@ -12,11 +12,15 @@ tracks <- readOGR(dsn = "./geojson/tracks.geojson")
 tracks@data[] <- lapply(tracks@data, as.character)
 tracks@data$id <- as.integer(tracks@data$id)
 
-# bring in soo data, fix column names, and convert date
+# bring in soo data, fix column names
 soo <- fread("./data/date-hour-soo-dest-all.csv",
              header = FALSE,
              stringsAsFactors = FALSE)
 colnames(soo) <- c("date", "hour", "origin", "destination", "count")
+
+# convert date using fastPOSIXct()
+# we use this function because using as.POSIXct() is *extremely* slow
+# this creates an oddity of needing all the times to be in UTC, though
 soo$date <- fastPOSIXct(soo$date, tz = "UTC")
 
 # create station abbreviation lookup table

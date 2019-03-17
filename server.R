@@ -11,8 +11,9 @@ server <- function(input, output, session)
     
     # subset by date-time specified by user
     # data.table allows referencing column by name only
-    trackCount <- soo[date >= as.POSIXct(input$dateRange[1]) &
-                      date <= as.POSIXct(input$dateRange[2]) &
+    # have to specify UTC here since we used fastPOSIXct() earlier
+    trackCount <- soo[date >= as.POSIXct(input$dateRange[1], tz = "UTC") &
+                      date <= as.POSIXct(input$dateRange[2], tz = "UTC") &
                       hour %in% as.integer(input$timeRange)]
     
     # aggregate subset together by edge and fix column names

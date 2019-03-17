@@ -23,7 +23,7 @@ ui <- fluidPage(
       # selector for the desired date range
       # minimums and maximums are determined from the input data
       dateRangeInput("dateRange",
-                     label = "Date Range: YYYY-MM-DD",
+                     label = "Date Range (YYYY-MM-DD)",
                      start = min(soo$date),
                      end = max(soo$date),
                      min = min(soo$date),
