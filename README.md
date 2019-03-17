@@ -46,18 +46,20 @@ Its output is a heatmap of where the passengers traveled on the network.
 The Shiny application does the following:
 
 1. Load the preparsed data.
-2. Aggregate the data for each edge.
-3. Load the station and track GIS data.
-4. Render the station and tracks using `leaflet`.
-5. Colors the tracks based on how many passengers traveled on that edge.
-
-In the future, I'll get the sidebar to work, which will subset the data based on the desired date-time combination.
-Then, it will re-render the track colorings when the update button is pressed.
-This requires using Shiny's reactives, which I admittedly don't understand fully right now.
+2. Load the station and track GIS data.
+3. Render the base map, the stations, and the sidebar.
+4. Render the tracks when the app is loaded and when the update button is pressed.
+	1. Validate the user's selections for the date-time.
+	2. Subset the preparsed data by the date-time.
+	3. Aggregate the data for each edge.
+	4. Color each track based on how many passengers traveled on that edge.
+	5. Create a popup containing exactly how many passengers traveled on that edge.
 
 ## Resources Used
 
 I used a variety of resources to create this application.
+
+### Starting Out
 
 [This blog post on DataScience.com](https://www.datascience.com/blog/beginners-guide-to-shiny-and-leaflet-for-interactive-mapping) was amazing for getting off the ground with mapping data using `leaflet` and Shiny together.
 If you're looking to get started doing something like this, I highly recommend going through that tutorial and modifying it to suit your needs.
@@ -75,10 +77,12 @@ The references for the following packages proved invaluable to getting this work
 Many of the [Shiny examples](https://github.com/rstudio/shiny-examples) were helpful for demonstrating different aspects of Shiny.
 In particular, I used the following:
 
-* [028-actionbutton-demo](https://github.com/rstudio/shiny-examples/tree/master/028-actionbutton-demo) to create the update button
-* [035-custominput-bindings](https://github.com/rstudio/shiny-examples/tree/master/035-custom-input-bindings) to create the update button
-* [037-date-and-date-range](https://github.com/rstudio/shiny-examples/tree/master/037-date-and-date-range) to create the date range selector
-* [063-superzip-example](https://github.com/rstudio/shiny-examples/tree/master/063-superzip-example) 
+* [`007-widgets`](https://github.com/rstudio/shiny-examples/tree/master/007-widgets) to create the `checkboxGroup`
+* [`028-actionbutton-demo`](https://github.com/rstudio/shiny-examples/tree/master/028-actionbutton-demo) to create the `actionButton`
+* [`035-custom-input-bindings`](https://github.com/rstudio/shiny-examples/tree/master/035-custom-input-bindings) to create the `actionButton`
+* [`037-date-and-date-range`](https://github.com/rstudio/shiny-examples/tree/master/037-date-and-date-range) to create the `dateRangeInput`
+* [`063-superzip-example`](https://github.com/rstudio/shiny-examples/tree/master/063-superzip-example) to understand how reactives work
+* [`081-widgets-gallery`](https://github.com/rstudio/shiny-examples/tree/master/081-widgets-gallery) to understand how reactives work 
 
 ### Stack Overflow
 
@@ -86,21 +90,24 @@ Finally, I utilized a few posts on [StackOverflow](https://stackoverflow.com/) t
 These include the following:
 
 * [Batch convert columns to numeric type](https://stackoverflow.com/questions/19146354/batch-convert-columns-to-numeric-type)
+* [Centering a plot within a fluidRow in Shiny](https://stackoverflow.com/questions/25147216/centering-a-plot-within-a-fluidrow-in-shiny)
 * [Change the index number of a dataframe](https://stackoverflow.com/questions/7567790/change-the-index-number-of-a-dataframe)
 * [Time range input with Hour level detail in shiny](https://stackoverflow.com/questions/38849674/time-range-input-with-hour-level-detail-in-shiny)
 
+### Other References
+
+[This page from UC Berkeley](https://www.stat.berkeley.edu/~s133/dates.html) was very helpful for working with `POSIXct`.
+
 ## Lessons Learned
 
-Two things that I became very familiar with over the course of working on this project:
+A few things that I became very familiar with over the course of working on this project:
 
 * Make sure to check that your strings are imported as characters, and not factors, if that's necessary for your logic. I spent a long time debugging that issue.
 * Make sure you didn't accidentally overwrite your input data. Sometimes you accidentally modify it, even when you didn't mean to.
+* Validating your data is important. I knew that from prior experience, but it was admittedly funny when I crashed the app by selecting no hours to display.
 
 ## Future
 
-For right now, I want to get the sidebar, subsetting, and reactivity working.
-The sidebar is useless right now, so giving that a purpose is priority one.
-
-Another idea I had was to create different types of visualizations.
+One idea I had was to create different types of visualizations with this data.
 Exactly what types of visualizations is a very good question.
-That's a reach goal, though.
+Maybe in the future I'll consider it further.

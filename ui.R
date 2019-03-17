@@ -1,42 +1,46 @@
+# code to create the rendering
+
 library(leaflet) # base for shiny map display
 
 ui <- fluidPage(
+  
+  # add the title to the top of the page
   titlePanel("BART Passenger Heatmap"),
   
+  # the main portion of the app
   fluidRow(
+    
+    # the rendered map
     column(width = 10,
       leafletOutput("basemap",
                     height = 1000)
     ),
       
+    # the buttons, all together in one centered column
     column(width = 2,
+           align = "center",
+           
+      # selector for the desired date range
+      # minimums and maximums are determined from the input data
       dateRangeInput("dateRange",
-                     label = "Date Range Input: YYYY-MM-DD",
+                     label = "Date Range: YYYY-MM-DD",
                      start = min(soo$date),
-                     end = max(soo$date)
-                     ),
+                     end = max(soo$date),
+                     min = min(soo$date),
+                     max = max(soo$date)),
       
-      numericInput("timeRangeStart",
-                   label = "Time Range Start (0 - 23)",
-                   value = 0,
-                   min = 0,
-                   max = 23,
-                   step = 1
-                   ),
+      # checkboxes for the desired times
+      # we use checkboxes so users can pick non-contiguous ranges
+      checkboxGroupInput("timeRange",
+                         label = "Hours",
+                         choiceNames = twelveHour,
+                         choiceValues = seq(from = 0, to = 23, by = 1),
+                         selected = seq(from = 0, to = 23, by = 1)),
       
-      numericInput("timeRangeEnd",
-                   label = "Time Range End (0 - 23)",
-                   value = 23,
-                   min = 0,
-                   max = 23,
-                   step = 1
-      ),
-      
+      # update button
+      # updates the map when pressed
       actionButton("updateDatetime",
                    label = "Update")
     )
   )
 )
-
-# next up: add date/hour select in ui.R
-# use reactives to only calculate weights as necessary
