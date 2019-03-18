@@ -22,10 +22,10 @@ ui <- fluidPage(
       # minimums and maximums are determined from the input data
       dateRangeInput("dateRange",
                      label = "Date Range (YYYY-MM-DD)",
-                     start = min(soo$date),
-                     end = max(soo$date),
-                     min = min(soo$date),
-                     max = max(soo$date)),
+                     start = minDate,
+                     end = maxDate,
+                     min = minDate,
+                     max = maxDate),
 
       # checkboxes for the desired times
       # we use checkboxes so users can pick non-contiguous ranges

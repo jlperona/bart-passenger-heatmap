@@ -103,12 +103,46 @@ server <- function(input, output, session)
     startDate <- fastPOSIXct(input$dateRange[1], tz = "UTC")
     endDate <- fastPOSIXct(input$dateRange[2], tz = "UTC")
 
+    # check if both dates are valid
+    # display pop-up to warn use and don't re-render track if this is the case
+    if(is.na(startDate) | is.na(endDate)) {
+      showModal(modalDialog(
+        title = "Error",
+        "Both dates must be in the format YYYY-MM-DD.",
+        easyClose = TRUE,
+        footer = NULL
+      ))
+    }
     # check if end date is earlier than start date
     # display pop-up to warn user and don't re-render track if this is the case
-    if(endDate < startDate) {
+    else if(endDate < startDate) {
       showModal(modalDialog(
         title = "Error",
         "The end date must be the same as or after the starting date.",
+        easyClose = TRUE,
+        footer = NULL
+      ))
+    }
+    # check if start date is greater than the last day in the data set
+    # display pop-up to warn user and don't re-render track if this is the case
+    else if(startDate > maxDate) {
+      showModal(modalDialog(
+        title = "Error",
+        paste("The last day in the data set is ", as.character(maxDate),
+              ". The first day in your time range must be the same as or before this date.",
+              sep = ""),
+        easyClose = TRUE,
+        footer = NULL
+      ))
+    }
+    # check if end date is less than the first day in the data set
+    # display pop-up to warn user and don't re-render track if this is the case
+    else if(endDate < minDate) {
+      showModal(modalDialog(
+        title = "Error",
+        paste("The first day in the data set is ", as.character(minDate),
+              ". The last day in your time range must be the same as or after this date.",
+              sep = ""),
         easyClose = TRUE,
         footer = NULL
       ))
@@ -125,6 +159,29 @@ server <- function(input, output, session)
     }
     # if user inputs are valid, re-render palette and track
     else {
+      # check if start date is earlier than first day in the data set
+      # warn user but re-render track since it won't make a difference
+      if(startDate < minDate) {
+        showModal(modalDialog(
+          title = "Warning",
+          paste("The first day in the data set is ", as.character(minDate),
+                ". Earlier dates will be ignored.", sep = ""),
+          easyClose = TRUE,
+          footer = NULL
+        ))
+      }
+      # check if end date is later than last day in the data set
+      # warn user but re-render track since it won't make a difference
+      else if(endDate > maxDate) {
+        showModal(modalDialog(
+          title = "Warning",
+          paste("The last day in the data set is ", as.character(maxDate),
+                ". Later dates will be ignored.", sep = ""),
+          easyClose = TRUE,
+          footer = NULL
+        ))
+      }
+
       # palette color choice courtesy of the Shiny SuperZIP example
       linePalette <- colorNumeric(
         palette = "viridis",

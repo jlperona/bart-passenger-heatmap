@@ -23,6 +23,10 @@ colnames(soo) <- c("date", "hour", "origin", "destination", "count")
 # this creates an oddity of needing all the times to be in UTC, though
 soo$date <- fastPOSIXct(soo$date, tz = "UTC")
 
+# save first and last dates in soo data
+minDate <- min(soo$date)
+maxDate <- max(soo$date)
+
 # create station abbreviation lookup table
 stationLookup <- stations@data[, which(names(stations@data) %in% c("name", "abbreviation"))]
 stationLookup[] <- lapply(stationLookup, as.character)
