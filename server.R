@@ -6,6 +6,28 @@ library(leaflet)    # base for shiny map display
 
 server <- function(input, output, session)
 {
+  # render basemap that will never change
+  # only the track data changes, so we don't need to make this reactive
+  output$basemap <- renderLeaflet({
+    
+    # render station icons in similar vein to actual BART map
+    stationIcon <- makeIcon(
+      iconUrl = "./graphics/station-icon.png",
+      iconWidth = 14,
+      iconHeight = 14,
+      iconAnchorX = 7,
+      iconAnchorY = 7
+    )
+    
+    leaflet() %>%
+      # render base map
+      addTiles() %>%
+      # render station data
+      addMarkers(data = stations,
+                 icon = stationIcon,
+                 popup = stations$name)
+  })
+  
   # reactive that is recalculated whenever the update button is pressed
   # it's also calculated when the app is originally opened
   passengerData <- reactive({
@@ -69,28 +91,6 @@ server <- function(input, output, session)
 
     # return final result
     tracks
-  })
-
-  # render basemap that will never change
-  # only the track data changes, so we don't need to make this reactive
-  output$basemap <- renderLeaflet({
-
-    # render station icons in similar vein to actual BART map
-    stationIcon <- makeIcon(
-      iconUrl = "./graphics/station-icon.png",
-      iconWidth = 14,
-      iconHeight = 14,
-      iconAnchorX = 7,
-      iconAnchorY = 7
-    )
-
-    leaflet() %>%
-      # render base map
-      addTiles() %>%
-      # render station data
-      addMarkers(data = stations,
-                 icon = stationIcon,
-                 popup = stations$name)
   })
 
   # run this code when first booting the app
