@@ -27,19 +27,32 @@ My final project for ECI 254 was to create a heatmap of passengers that traveled
 
 ### Objective
 
-My objective was to create a responsive Shiny app
+My objective was to create a responsive Shiny app.
 
 ## Methodology
 
-### Input Data
+There are two major portions to this app:
+
+1. Parsing through the input data.
+2. Displaying the parsed data in Shiny.
 
 ### Parsing
+
+#### Input Data
+
+#### Parsing On Demand in R
+
+#### Preparsing in Python
 
 Dijkstra's / BFS
 
 ### Shiny App
 
+#### User Interface (UI)
+
 #### Reactives
+
+#### Validation
 
 ## Results
 
@@ -104,7 +117,7 @@ It is possible to embed Shiny applications in RMarkdown, as I've done below.
 You can either define the entire application inline using the [`shinyApp()`](https://shiny.rstudio.com/reference/shiny/latest/shinyApp.html) function, or include the app in another directory using the [`shinyAppDir()`](https://shiny.rstudio.com/reference/shiny/latest/shinyApp.html) function.
 Since my app is split across multiple files and pulls from other data files, I have opted for the latter function.
 In addition, you have to modify the YAML at the top of the document to tell RMarkdown that Shiny content is being included.
-At the top of the RMarkdown document, I have added the following line:
+At the top of this RMarkdown document, I have added the following line:
 
 ```
 runtime: shiny
@@ -126,4 +139,37 @@ shinyAppDir(".",
 
 ## Conclusion
 
-I accomplished the objective I set out to achieve at the beginning of this project.
+I accomplished the objective I set out to achieve at the beginning of this project: a fully-functional and robust Shiny app that shows a heatmap of the BART system using BART's own data.
+I also was able to take an idea I've had in the back of my mind ever since I took MAE 253 in Spring Quarter 2018 and bring it to life.
+I'm quite happy with the result and my growth as an R programmer in this class.
+
+### Methods for Improvement
+
+The biggest flaw in this app right now is the UI layout.
+I am not a UI or user experience (UX) expert, but I think that the UI can definitely be improved.
+However, to my understanding, to do so in Shiny requires Cascading Style Sheets (CSS) experience, which I don't have.
+
+Another "flaw" (which I would consider a difference in opinion) is the layout of the map.
+I wanted to see the BART network overlaid on a real map.
+However, this means that some of the edges are much larger than the others.
+For example, the edges between the San Francisco stations are very difficult to see when the app is initially started.
+You have to zoom in in order to see their colors.
+A "better" heatmap would make it easier to see all the edges at once, which means that the stations would be evenly spaced.
+Due to the setup of this app, it would be relatively easy to create a different heatmap by simply changing the station GIS data.
+Since it's open source, anybody could take this as a base and create it, if they'd like to.
+
+### Future Work
+
+There are a couple of ways that I can think of to improve this app at the moment.
+All of these should be possible with my skill set.
+
+* Instead of calculating the sum of the number of passengers on an edge, show other summary statistics, such as the mean or median.
+* Other visualization types, such as a circular [Sankey diagram](https://developers.google.com/chart/interactive/docs/gallery/sankey) that shows passengers' final destinations from a given source station.
+
+I have another idea for future work, which isn't related to improving my app.
+I will admit that it was somewhat difficult to get started with Shiny.
+[This blog post on DataScience.com](https://www.datascience.com/blog/beginners-guide-to-shiny-and-leaflet-for-interactive-mapping) was the most helpful thing for getting me off the ground, but I was doing some things differently than them, which complicated matters.
+That being said, I spent most of my time attempting to figure out a few more advanced pieces of Shiny, such as reactives and validating user input.
+In contrast, I was able to get other things, like the preparser, done relatively quickly.
+I do think that the Shiny documentation could be better for certain topics, like the ones I've mentioned above.
+That is certainly an area for future work.
