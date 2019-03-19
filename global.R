@@ -32,6 +32,7 @@ stationLookup <- stations@data[, which(names(stations@data) %in% c("name", "abbr
 stationLookup[] <- lapply(stationLookup, as.character)
 
 # create character string of hour ranges in 12-hour format
+# we need to put a date in there even though we're going to throw it away anyway
 twelveHour <- strftime(paste("2000-01-01 ",
                              as.character(seq(from = 0, to = 23, by = 1)),
                              ":00", sep = ""),

@@ -2,8 +2,15 @@
 title: "BART Passenger Heatmap"
 author: "Justin Perona"
 date: "2019-03-20"
-output: html_document
+
+# code courtesy of R Markdown: The Definitive Guide by Xie, Allaire, and Grolemund
+# https://bookdown.org/yihui/rmarkdown/html-document.html
 runtime: shiny
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float: true
 ---
 
 <style>
@@ -17,17 +24,46 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Introduction
 
-My final project for ECI 254 was to create a heatmap of passengers that traveled through the San Francisco Bay Area Rapid Transit (BART) system.
+In Winter Quarter 2018, I took ECI 254 (Exploring Data from Built Environment Using R) with Professor Deb Niemeier.
+My final project for that class was to create a heatmap of passengers that traveled through the San Francisco Bay Area Rapid Transit (BART) system.
 
-### Motivation
+### Previous Work and Motivation
 
-### Previous Work
+In Spring Quarter 2018, I took MAE 253 (Network Theory) with Professor Raissa D'Souza.
+My final project for that class involved analyzing the network formed by the BART system with a team.
+One of the papers I read for that project, [*Weighted complex network analysis of travel routes on the Singapore public transportation system*](https://doi.org/10.1016/j.physa.2010.08.015.) by Soh et al., argued that a dynamic (weighted) network analysis of a metro rail network like BART could give different insights into a network than a topological (unweighted) analysis.
+In order to analyze the BART network, I wanted to create visualizations of the dynamic BART network at different times and days.
+To do so, I ended up writing a Python script that would parse the BART hourly passenger origin-destination data [available on their website](https://www.bart.gov/about/reports/ridership) into a format that could be easily plotted in an external tool.
+This allowed me to create the visualizations my team needed for the project.
+That Python script and documentation on how to use it is available publicly on GitHub, in my repository [`jlperona/bart-hourly-dataset-parser`](https://github.com/jlperona/bart-hourly-dataset-parser).
 
-### Changes from Presentation
+After the class, I had a conversation with one of my teammates about how to take this work further.
+I thought about creating a heatmap of the BART network using the same data I worked with.
+The heatmap would make it easy to see at a glance where the majority of the passengers were travelling.
+My teammate's suggestion was to use a visualization library like [D3.js](https://d3js.org/).
+However, I didn't have experience with JavaScript, so I ended up shelving the idea.
+
+When the final project for ECI 254 was announced, I started thinking of datasets I could use.
+Professor Niemeier had already put Shiny in my mind, since a previous student had used Shiny for their final project.
+Eventually, I remembered my previous work in MAE 253, and my heatmap idea.
+I decided that I wanted to try to implement the heatmap in Shiny and see how far I could get.
 
 ### Objective
 
-My objective was to create a responsive Shiny app.
+My objective was to create a Shiny app that would display BART passenger data on an actual map.
+The app should show where the BART stations and tracks were, as well as color each track by how many passengers traveled on it.
+I also wanted users to be able to subset the input data by date and hour, so they could see how many passengers traveled at certain points in time.
+
+### Changes Made After the Presentation
+
+I demonstrated an incomplete version of the app in class on 2019-03-15.
+Since then, I have made the following changes (as shown by [my commit history for the repository](https://github.com/jlperona/bart-passenger-heatmap/commits/master)):
+
+* Modify the sidebar to be more useful, and actually use the options that the user input rather than ignoring it.
+* Use Shiny's reactives to calculate and update the displayed data based on the user's input. I also coded it so only the tracks are re-rendered on an update, instead of the entire map.
+* Validate the user's input and display errors if there's anything wrong. This makes the app more robust. Previously, it would crash if incorrect input was given.
+
+For more detail on the topics listed above, see the Methodology section below.
 
 ## Methodology
 
@@ -56,12 +92,12 @@ Dijkstra's / BFS
 
 ## Results
 
-The end result of my work is a working heatmap for the BART data that allows users to subset the input data by date and hour.
+The end result of my work is a working and robust heatmap for the BART data that allows users to subset the input data by date and hour.
 
 ### Source Code
 
 I have made all source code for this application available on GitHub in my repository [`jlperona/bart-passenger-heatmap`](https://github.com/jlperona/bart-passenger-heatmap).
-The code in that repository is licensed under the MIT License, the same license which my prior work [`jlperona/bart-hourly-dataset-parser`](https://github.com/jlperona/bart-hourly-dataset-parser) was licensed under.
+The code in that repository is licensed under the MIT License, which is the same license that my prior work [`jlperona/bart-hourly-dataset-parser`](https://github.com/jlperona/bart-hourly-dataset-parser) was licensed under.
 
 I'm a strong believer in the open-source movement.
 Making this code available to all under an [open source license](https://opensource.org/licenses) is important to me.
@@ -139,9 +175,12 @@ shinyAppDir(".",
 
 ## Conclusion
 
-I accomplished the objective I set out to achieve at the beginning of this project: a fully-functional and robust Shiny app that shows a heatmap of the BART system using BART's own data.
-I also was able to take an idea I've had in the back of my mind ever since I took MAE 253 in Spring Quarter 2018 and bring it to life.
-I'm quite happy with the result and my growth as an R programmer in this class.
+I accomplished the objective I set out to achieve at the beginning of this project: a fully-functional Shiny app that shows a heatmap of the BART system using BART's own data.
+In addition, I went slightly further and made the app more robust by validating user input.
+
+On a more personal level, I was able to take an idea I've had in the back of my mind ever since I took MAE 253 and bring it to life.
+I also got to learn how to use Shiny to build web apps.
+I'm quite happy with the final result and my growth as an R programmer in this class.
 
 ### Methods for Improvement
 
@@ -156,7 +195,7 @@ For example, the edges between the San Francisco stations are very difficult to 
 You have to zoom in in order to see their colors.
 A "better" heatmap would make it easier to see all the edges at once, which means that the stations would be evenly spaced.
 Due to the setup of this app, it would be relatively easy to create a different heatmap by simply changing the station GIS data.
-Since it's open source, anybody could take this as a base and create it, if they'd like to.
+Since it's open source, anybody could take this as a base and create that application, if they so desire.
 
 ### Future Work
 
@@ -164,7 +203,7 @@ There are a couple of ways that I can think of to improve this app at the moment
 All of these should be possible with my skill set.
 
 * Instead of calculating the sum of the number of passengers on an edge, show other summary statistics, such as the mean or median.
-* Other visualization types, such as a circular [Sankey diagram](https://developers.google.com/chart/interactive/docs/gallery/sankey) that shows passengers' final destinations from a given source station.
+* Other visualization types, such as a [chord diagram](https://en.wikipedia.org/wiki/Chord_diagram) that shows passengers' final destinations from a given source station.
 
 I have another idea for future work, which isn't related to improving my app.
 I will admit that it was somewhat difficult to get started with Shiny.
@@ -172,4 +211,14 @@ I will admit that it was somewhat difficult to get started with Shiny.
 That being said, I spent most of my time attempting to figure out a few more advanced pieces of Shiny, such as reactives and validating user input.
 In contrast, I was able to get other things, like the preparser, done relatively quickly.
 I do think that the Shiny documentation could be better for certain topics, like the ones I've mentioned above.
-That is certainly an area for future work.
+That is certainly an area for improvement.
+
+## Acknowledgements
+
+I'd like to acknowledge my teammates in MAE 253 who helped me with the previous work that guided this project:
+
+* Baotuan Nguyen, formerly a Master's student in Computer Science at UC Davis. He's currently a software development engineer at Workday, Inc.
+* Heidi Schweizer, formerly a PhD student in Agricultural and Resource Economics at UC Davis. She's currently an assistant professor at North Carolina State University.
+
+I'd also like to acknowledge Professor Deb Niemeier, who let me attempt this project even though there was a good chance I'd fail (at least, from my perspective).
+I've learned a lot about both R and Shiny through this project, and I also created something which I think is both interesting and useful thanks to her class.
