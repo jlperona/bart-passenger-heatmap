@@ -10,7 +10,9 @@ output:
   html_document:
     toc: true
     toc_depth: 4
-    toc_float: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
 ---
 
 <style>
@@ -69,14 +71,71 @@ For more detail on the topics listed above, see the Methodology section below.
 
 There are two major portions to this application:
 
-1. Parsing through the input data.
-2. Displaying the parsed data in Shiny.
+1. Using Python, parsing through the BART data to create an input file.
+2. Using Shiny, collating the input file and rendering the heatmap.
 
 ### Parsing
 
+The current parsing mechanism is a preparser that only needs to be run once to create the input data for the Shiny application.
+The Shiny application then takes that input data, collates it, and displays it.
+
 #### Input Data
 
+BART provides hourly passenger origin-destination data [on their website](https://www.bart.gov/about/reports/ridership).
+I found this dataset when I was working on the final project for MAE 253.
+At the time of writing, their data ranges from 2011-01-01 to 2018-12-31, which is eight years worth of data.
+The files are separated by year, and in their uncompressed form are approximately 250 MB each.
+
+The data takes the following format:
+
+```
+2011-05-23,4,FRMT,UCTY,77
+```
+
+In order, each column stands for the following:
+
+1. Date, in ISO 8601-style `YYYY-MM-DD` format.
+2. Hour, in 24-hour time.
+3. Origin station, in BART's 4-letter abbreviation code.
+4. Destination station, in BART's 4-letter abbreviation code.
+5. The number of passengers who traveled between those two stations.
+
+Combinations of stations for which there were zero passengers that traveled between them are not included.
+
+The BART data can be interpreted as a graph, where the vertices are the stations, edges represent passenger flow, and the weight of each edge is based on how many passengers traveled between that station pair.
+The source data, then, can be interpreted as a fully-connected graph, since from any station there can be an entry in the data (and thus an edge in the graph) to any other station.
+A fully-connected graph is hard to visualize, however.
+
+#### Prior Work
+
+Instead of attempting to visualize a fully-connected graph, it would be easier if the graph was in the same format as [the BART system map](https://www.bart.gov/system-map).
+There would only be edges between adjacent stations on the network.
+The edge weights then become how many passengers traveled between those two stations.
+Their final destination may not have necessarily been either of those two stations, but they traveled on the track between the two to get to their final destination.
+
+The BART data is not in this format, however.
+In my previous work for MAE 253, [`jlperona/bart-hourly-dataset-parser`](https://github.com/jlperona/bart-hourly-dataset-parser), I wrote a parser that parses through the BART origin-destination data and exports a graph file that is in the same format as the system map.
+The methodology behind that script is as follows:
+
+
+
 #### Parsing On Demand in R
+
+In my Shiny application, I needed the same functionality that the Python script from my previous work gave.
+Being able to turn the BART data into something more easily visualized was crucial.
+
+Initially, I tried to replicate my previous Python script using R.
+Instead of exporting a graph file, though, I would access the graph's edges 
+You can see that attempt in [my repository history](https://github.com/jlperona/bart-passenger-heatmap/blob/a2ccbe602d75cb41e230803973afae65edb0d149/other/igraph.R).
+This would mean that the Shiny application would take in the BART data as a direct input.
+Since NetworkX doesn't exist in R, I used a package called `igraph` instead.
+`igraph` provides network analysis tools, and is available in R.
+It provides much of the same functionality that I needed from NetworkX, so it seemed like an appropriate choice.
+
+I was able to successfully implement the parsing using `igraph`, but I came across a problem.
+Parsing through a one-day subset of the data with about 26,000 rows would take about 5 minutes to execute in R, which was too long as it was.
+Extrapolating this to the entire eight-year dataset would have been infeasible.
+Parsing on demand was not the correct solution here.
 
 #### Preparsing in Python
 
