@@ -34,7 +34,7 @@ My final project for that class was to create a heatmap of passengers that trave
 In Spring Quarter 2018, I took MAE 253 (Network Theory) with Professor Raissa D'Souza.
 My final project for that class involved analyzing the network formed by the BART system with a team.
 One of the papers I read for that project, [*Weighted complex network analysis of travel routes on the Singapore public transportation system*](https://doi.org/10.1016/j.physa.2010.08.015.) by Soh et al., argued that a dynamic (weighted) network analysis of a metro rail network like BART could give different insights into a network than a topological (unweighted) analysis.
-In order to analyze the BART network, I wanted to create visualizations of the dynamic BART network at different times and days.
+In order to analyze the BART network dynamically, I wanted to create visualizations of the BART network at different times and days.
 To do so, I ended up writing a Python script that would parse the BART hourly passenger origin-destination data [available on their website](https://www.bart.gov/about/reports/ridership) into a format that could be easily plotted in an external tool.
 This allowed me to create the visualizations my team needed for the project.
 That Python script and documentation on how to use it is available publicly on GitHub, in my repository [`jlperona/bart-hourly-dataset-parser`](https://github.com/jlperona/bart-hourly-dataset-parser).
@@ -84,7 +84,7 @@ The Shiny application then takes that input data, collates it, and displays it.
 BART provides hourly passenger origin-destination data [on their website](https://www.bart.gov/about/reports/ridership).
 I found this dataset when I was working on the final project for MAE 253.
 At the time of writing, their data ranges from 2011-01-01 to 2018-12-31, which is eight years worth of data.
-The files are separated by year, and in their uncompressed form are approximately 250 MB each.
+The files are separated by year, and in their uncompressed form are approximately 250 MB each, which totals 2 GB for the current eight years of data.
 
 The data takes the following format:
 
@@ -102,8 +102,9 @@ In order, each column stands for the following:
 
 Combinations of stations for which there were zero passengers that traveled between them are not included.
 
-The BART data can be interpreted as a graph, where the vertices are the stations, edges represent passenger flow, and the weight of each edge is based on how many passengers traveled between that station pair.
-The source data, then, can be interpreted as a fully-connected graph, since from any station there can be an entry in the data (and thus an edge in the graph) to any other station.
+Based on this, the BART data can be interpreted as a [graph](https://en.wikipedia.org/wiki/Graph_\(discrete_mathematics\)).
+The vertices are the stations, the edges represent passenger flow, and the weight of each edge is based on how many passengers traveled between that station pair.
+The source data then can be interpreted as a fully-connected graph, since from any station there can be an entry in the data (and thus an edge in the graph) to any other station.
 A fully-connected graph is hard to visualize, however.
 
 #### Prior Work
@@ -112,36 +113,67 @@ Instead of attempting to visualize a fully-connected graph, it would be easier i
 There would only be edges between adjacent stations on the network.
 The edge weights then become how many passengers traveled between those two stations.
 Their final destination may not have necessarily been either of those two stations, but they traveled on the track between the two to get to their final destination.
+Interpreting this visually, we want to turn the graph representation on the left into the one on the right, with the weight of an edge on the left added to every edge on the shortest path between the two stations on the right:
+
+![](./graphics/parser.png)
 
 The BART data is not in this format, however.
-In my previous work for MAE 253, [`jlperona/bart-hourly-dataset-parser`](https://github.com/jlperona/bart-hourly-dataset-parser), I wrote a parser that parses through the BART origin-destination data and exports a graph file that is in the same format as the system map.
+In [my previous work for MAE 253](https://github.com/jlperona/bart-hourly-dataset-parser), I wrote a parser script in Python that parses through the BART origin-destination data and exports a graph file that is in the same format as the system map.
+I used the Python package `NetworkX` to do the heavy lifting in the parser.
+`NetworkX` has tools to create, manipulate, and analyze graphs and networks.
+Since it had a function to determine shortest paths in a graph, it was perfect for my use case.
 The methodology behind that script is as follows:
 
-
+1. Parse a base input graph to set up the network topology, such as the graph on the right above. The graph is considered to be unweighted and undirected.
+2. Read in the hourly origin-destination data line by line.
+    1. Parse out the origin station, destination station, and number of passengers between those two stations at that date and time.
+    2. Calculate the shortest path between the origin station and destination station.
+        * Since the input graph is both unweighted and undirected, a [breadth-first search](https://en.wikipedia.org/wiki/Breadth-first_search) is the best algorithm to determine these shortest paths.
+        * Due to the current topology of the network, there will only ever be one shortest path between stations. There are no possible alternate paths that could cause an ambiguity.
+    3. Add the number of passengers to every edge along the shortest path.
+3. Export the final weighted graph to a graph file similar in format to the base input graph.
 
 #### Parsing On Demand in R
 
 In my Shiny application, I needed the same functionality that the Python script from my previous work gave.
-Being able to turn the BART data into something more easily visualized was crucial.
+Being able to turn the BART data into something more easily visualized was crucial to making the application useful.
 
 Initially, I tried to replicate my previous Python script using R.
-Instead of exporting a graph file, though, I would access the graph's edges 
+Instead of exporting a graph file, though, I would access the final graph's weights and use that as the passenger data for each edge.
 You can see that attempt in [my repository history](https://github.com/jlperona/bart-passenger-heatmap/blob/a2ccbe602d75cb41e230803973afae65edb0d149/other/igraph.R).
 This would mean that the Shiny application would take in the BART data as a direct input.
-Since NetworkX doesn't exist in R, I used a package called `igraph` instead.
-`igraph` provides network analysis tools, and is available in R.
-It provides much of the same functionality that I needed from NetworkX, so it seemed like an appropriate choice.
+Since `NetworkX` doesn't exist in R, I used a package called `igraph` instead.
+`igraph` also provides graph and network analysis tools, and is available in R.
+It provided the same functionality that I needed from `NetworkX`, so it seemed like an appropriate choice.
 
 I was able to successfully implement the parsing using `igraph`, but I came across a problem.
-Parsing through a one-day subset of the data with about 26,000 rows would take about 5 minutes to execute in R, which was too long as it was.
-Extrapolating this to the entire eight-year dataset would have been infeasible.
+Parsing through a one-day subset of the data with about 26,000 rows would take about 5 minutes to execute in R, which was unreasonable.
+Scaling this to the entire eight-year dataset would have been infeasible.
+Another issue was that I would have had to include all 2 GB of the BART data with my Shiny application.
 Parsing on demand was not the correct solution here.
 
 #### Preparsing in Python
 
-Dijkstra's / BFS
+Some of my friends suggested other solutions, such as building a database to contain all the data.
+I eventually settled on creating a *preparser* that would do the heavy lifting ahead of time.
+It would replicate most of the functionality of the original Python script.
+However, instead of writing to a graph file, it wrote to an output CSV with the same format as the BART data.
+Instead of there being thousands of rows for a given date-hour combination, it would combine them into only 49 rows, the number of edges in the current BART network.
+This significantly cuts down the size of the final file.
+
+Running the preparser on my laptop took 1 hour with all eight years' worth of data.
+In the end, though, I obtained an output file that was approximately 90 MB in size.
+The original files were approximately 2 GB in size, which means I managed to create an input file that was about 4.4% the size of the input files.
+This file is `date-hour-soo-dest-all.csv` in the `data/` subdirectory of my repository.
+
+Now, instead of loading then parsing the BART data, the Shiny application loads the preparsed data and only runs smaller functions to collate the data together.
+Instead of taking five minutes to parse one day, my application can display results in seconds.
+An additional benefit is that the preparser is easy to run if BART adds more data.
+I believe that this is the most technically impressive part of my work.
 
 ### Shiny Application
+
+After preparsing the data, we now need to display it.
 
 #### User Interface (UI)
 
