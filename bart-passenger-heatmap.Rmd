@@ -65,7 +65,7 @@ Since then, I have made the following changes (as shown by [my commit history fo
 * Use Shiny's reactives to calculate and update the displayed data based on the user's input. I also coded it so only the tracks are re-rendered on an update, instead of the entire map.
 * Validate the user's input and display errors if there's anything wrong. This makes the application more robust. Previously, it would crash if incorrect input was given.
 
-For more detail on the topics listed above, see the Methodology section below.
+For more detail on the topics listed above, see the *Additional Features* subsection in the *Methodology* section below.
 
 ## Methodology
 
@@ -85,8 +85,7 @@ BART provides hourly passenger origin-destination data [on their website](https:
 I found this dataset when I was working on the final project for MAE 253.
 At the time of writing, their data ranges from 2011-01-01 to 2018-12-31, which is eight years' worth of data.
 The files are separated by year, and in their uncompressed form are approximately 250 MB each, which totals 2 GB for the current eight years of data.
-
-The data takes the following format:
+The data is in the following format:
 
 ```
 2011-05-23,4,FRMT,UCTY,77
@@ -115,14 +114,15 @@ Interpreting this visually, we want to turn the graph representation on the left
 
 ![](./graphics/parser.png)
 
-The BART data is not in this format, however.
+The BART data is not in this simplified format, however.
 In [my previous work for MAE 253](https://github.com/jlperona/bart-hourly-dataset-parser), I wrote a parser script in Python that parses through the BART origin-destination data and exports a graph file that is in the same format as the system map.
 I used the Python package `NetworkX` to do the heavy lifting in the parser.
 `NetworkX` has tools to create, manipulate, and analyze graphs and networks.
 Since it had a function to determine shortest paths in a graph, it was perfect for my use case.
 The methodology behind that script is as follows:
 
-1. Parse a base input graph to set up the network topology, such as the graph on the right above. The graph is considered to be unweighted and undirected.
+1. Parse a base input graph to set up the network topology, such as the graph on the right above.
+    * The graph is considered to be unweighted and undirected.
 2. Read in the hourly origin-destination data line by line.
     1. Parse out the origin station, destination station, and number of passengers between those two stations at that date and time.
     2. Calculate the shortest path between the origin station and destination station.
@@ -157,9 +157,10 @@ I eventually settled on creating a *preparser* that would do the heavy lifting a
 It would replicate most of the functionality of the original Python script.
 However, instead of writing to a graph file, it wrote to an output CSV with the same format as the BART data.
 Instead of there being thousands of rows for a given date-hour combination, it would combine them into only 49 rows, the number of edges in the current BART network.
-This significantly cuts down the final file size.
+This significantly reduces the final file size.
 
-As most of the code was identical, I wrote the preparser in Python, again leveraging `NetworkX` for its graph functions.
+Most of the logic for the preparser was identical to my original script, save for the exporting.
+Based on this, I wrote the preparser in Python, again leveraging `NetworkX` for its graph functions.
 This script can be found in the `preparser/` subdirectory in this repository.
 Running the preparser on my laptop took 1 hour with all eight years' worth of data.
 In the end, though, I obtained an output file that was approximately 90 MB in size.
@@ -185,7 +186,7 @@ There are three files where my code for the Shiny application resides in, each w
 * `server.R`, which contains the code that is executed by the application to be displayed to the user.
 
 It is also possible to make a Shiny application using a single file, but I opted against that.
-Splitting the code into clearly separate pieces made sense to me.
+Splitting the code into clear, separate pieces made sense to me.
 
 #### Mapping the Stations and Tracks
 
@@ -193,14 +194,14 @@ The first step was to render the BART stations and tracks.
 BART provides station and line GIS data [on their website](https://www.bart.gov/schedules/developers/geo).
 I was able to take their station data mostly as is.
 However, their line data was one big line for each of BART's routes.
-I needed separate lines between each station, so that I could color each of them separately depending on how many passengers travelled on that edge.
+I needed separate lines between each station, so that I could color each of them separately depending on how many passengers traveled on that edge.
 
 To do this, I imported BART's station and line data into ArcGIS.
 I exported the station data into the GeoJSON format after removing up some unnecessary variables in the data.
 For the track data, I had to split the lines for the routes into separate segments, using the stations as the points where to split them.
 Due to the way it was split, I had to merge some pieces back together, and remove some duplicate segments of track.
 Finally, I cleaned up some unnecessary variables in the data and exported the track data into GeoJSON as well.
-You can find both of these files in the `geojson/` subdirectory.
+You can find both of these files in the `geojson/` subdirectory in this repository.
 
 Now that I had the GIS data in the format I needed, I could bring the data into R and map it.
 To do so, I needed to use the following packages:
@@ -209,7 +210,7 @@ To do so, I needed to use the following packages:
 * `leaflet`, which is used for creating maps in R much like `mapview`
 * `shiny`, the framework I used to build the app
 
-Combining these together, I was able to successfully render the tracks.
+Combining these together, I was able to successfully render the tracks on a map.
 
 #### Coloring the Tracks
 
@@ -222,7 +223,7 @@ Once I did that, I had to merge that together with the track data so that `leafl
 To accomplish this, I used the following packages:
 
 * `data.table` to quickly import the CSV file
-* `fasttime` to quickly convert the dates in the preparsed data to `POSIXct`
+* `fasttime` to quickly convert the dates in the preparsed data to `POSIXct`, a date format in R
 
 I could have done all the functionality that these two packages provide in base R, but using these two made the processing go much faster.
 With a slight modification to the track rendering mentioned in the previous section, I was able to successfully color the tracks.
@@ -238,14 +239,15 @@ When I presented my app originally, the sidebar was non-functional, so there was
 ### Additional Features
 
 After the presentation, I added reactivity to my application, and validated user input as well.
-These features built off the original base application that I wrote.
+These features built off the original base application that I had presented.
 
 #### Reactivity
 
 [According to the Shiny documentation](https://shiny.rstudio.com/articles/understanding-reactivity.html), *reactivity* is what makes Shiny apps responsive.
 A reactive value will update itself when a value that it depends on is updated.
 In this application, the values that can be updated are the user's requested choices to subset the data by date and time.
-I wanted the tracks to be re-rendered if those values are changed, so I needed to make a reactive variable for the track data and number of passengers on each piece of track.
+I wanted the tracks to be re-rendered and coloring to be updated if those values are changed.
+Thus, I needed to make a reactive variable for the track data and number of passengers on each piece of track.
 I did this with the [`reactive()`](https://shiny.rstudio.com/reference/shiny/1.1.0/reactive.html) function, which declares a variable as reactive.
 In `server.R`, you can find the following function call:
 
@@ -259,6 +261,7 @@ passengerData <- reactive({
 When those are updated, `passengerData` will update.
 However, I didn't want to have it update every single time the user made a change.
 I wanted the user to have to explicitly press a button to re-render the data, to cut down on needless re-renderings.
+Further down in `server.R`, you can find the following function call:
 
 ```{r echo=TRUE,eval=FALSE}
 observeEvent(input$updateDatetime,
@@ -272,9 +275,10 @@ observeEvent(input$updateDatetime,
 In this case, it's when the user presses on the update button in the UI.
 Now, whenever the button is pressed, the `observeEvent()` function is run, which checks if the user input is valid.
 This is discussed further in the next section.
-If it is, then it re-renders the track data using the function [`leafletProxy()`](https://www.rdocumentation.org/packages/leaflet/versions/2.0.2/topics/leafletProxy) in `leaflet`.
-The track data is dependent on `passengerData`, so that will be updated as well.
-It will re-subset the data based on the user input and update the variable.
+If it is, then it re-renders only the tracks using the function [`leafletProxy()`](https://www.rdocumentation.org/packages/leaflet/versions/2.0.2/topics/leafletProxy) in `leaflet`.
+The base layer of the map and the stations are left untouched.
+The tracks are dependent on `passengerData`, so that will be updated as well.
+It will re-subset the data based on the user input and update the passenger counts.
 
 Together, these two functions allowed me to implement the interactivity in my application.
 Reactive expressions in Shiny are exceedingly powerful, and I only utilized a tiny portion of what they can do.
@@ -290,12 +294,13 @@ In order to solve this, I added `if` statements to the `observeEvent()` call tha
 If it encounters invalid input, it throws up a dialog saying what the error was, then stops.
 This is much more tolerant of failure than simply crashing.
 The user is allowed to go back and change their input.
-Another useful side efect is that nothing is re-rendered, saving some processing time.
+Another useful side effect is that nothing is re-rendered, saving some processing time.
 Since `passengerData` isn't used if the input is invalid, it isn't updated either, so we save time there as well.
 
-Note that the Shiny application also requires other input files, like the GeoJSON data to render the stations and tracks, the prepared data CSV, and the icon used to indicate where a station is.
+Note that the Shiny application also requires other input files, like the GeoJSON data to render the stations and tracks, the preparsed data CSV, and the icon used to indicate where a station is.
 I consider validating these files unnecessary.
 If any of these files are invalid, the Shiny application will have nothing to display, so having it handle this type of failure gracefully doesn't seem like it would be particularly useful.
+R will also throw an error when attempting to build the application, so the user will know what went wrong.
 
 ## Results
 
@@ -304,8 +309,8 @@ The end result of my work is a working and robust heatmap for the BART data that
 ### Source Code
 
 I have made all source code for this application available on GitHub in my repository [`jlperona/bart-passenger-heatmap`](https://github.com/jlperona/bart-passenger-heatmap).
-The code in that repository is licensed under the MIT License, which is the same license that my prior work [`jlperona/bart-hourly-dataset-parser`](https://github.com/jlperona/bart-hourly-dataset-parser) was licensed under.
 
+The code in that repository is licensed under the MIT License, which is the same license that my prior work [`jlperona/bart-hourly-dataset-parser`](https://github.com/jlperona/bart-hourly-dataset-parser) was licensed under.
 I'm a strong believer in the open-source movement.
 Making this code available to all under an [open source license](https://opensource.org/licenses) is important to me.
 Since I was the only one working on this data and project in the class at the time, I felt comfortable making the code open source before I turned this report in.
@@ -356,7 +361,7 @@ The link above may not work depending on whether I have exhausted my allotment f
 
 #### Embedded in RMarkdown
 
-It is possible to embed Shiny applications in RMarkdown, as I've done below.
+Finally, it is possible to embed Shiny applications in RMarkdown, as I've done below.
 You can either define the entire application inline using the [`shinyApp()`](https://shiny.rstudio.com/reference/shiny/latest/shinyApp.html) function, or include the application in another directory using the [`shinyAppDir()`](https://shiny.rstudio.com/reference/shiny/latest/shinyApp.html) function.
 Since my application is split across multiple files and pulls from other data files, I have opted for the latter function.
 In addition, you have to modify the YAML at the top of the document to tell RMarkdown that Shiny content is being included.
@@ -367,7 +372,7 @@ runtime: shiny
 ```
 
 You will also need to install some packages to build this RMarkdown document, besides the normal ones typically used to build any RMarkdown document.
-The following code should install the necessary packages:
+The following code will install the necessary packages:
 
 ```{r echo=TRUE,eval=FALSE}
 install.packages(c("data.table",
@@ -398,7 +403,6 @@ shinyAppDir(".",
 
 I accomplished the objective I set out to achieve at the beginning of this project: a fully-functional Shiny application that shows a heatmap of the BART system using BART's own data.
 In addition, I went slightly further and made the application more robust by validating user input.
-
 On a more personal level, I was able to take an idea I've had in the back of my mind ever since I took MAE 253 and bring it to life.
 I also got to learn how to use Shiny to build web apps.
 I'm quite happy with the final result and my growth as an R programmer in this class.
@@ -415,7 +419,7 @@ However, this means that some of the edges are much larger than the others.
 For example, the edges between the San Francisco stations are very difficult to see when the application is initially started.
 You have to zoom in in order to see their colors.
 A "better" heatmap would make it easier to see all the edges at once, which means that the stations would be evenly spaced.
-Due to the setup of this application, it would be relatively easy to create a different heatmap by simply changing the station GIS data.
+Due to the setup of this application, it would be relatively easy to create a different heatmap by simply changing the station GeoJSON data.
 Since it's open source, anybody could take this as a base and create that application, if they so desire.
 
 ### Future Work
@@ -428,7 +432,7 @@ All of these should be possible with my skill set.
 
 I have another idea for future work, which isn't related to improving my application.
 I will admit that it was somewhat difficult to get started with Shiny.
-[This blog post on DataScience.com](https://www.datascience.com/blog/beginners-guide-to-shiny-and-leaflet-for-interactive-mapping) was the most helpful thing for getting me off the ground, but I was doing some things differently than them, which complicated matters.
+[This blog post on DataScience.com](https://www.datascience.com/blog/beginners-guide-to-shiny-and-leaflet-for-interactive-mapping) was the most helpful thing for getting me off the ground, but I was doing some things differently than their tutorial, which complicated matters.
 That being said, I spent most of my time attempting to figure out a few more advanced pieces of Shiny, such as reactives and validating user input.
 In contrast, I was able to get other things, like the preparser, done relatively quickly.
 I do think that the Shiny documentation could be better for certain topics, like the ones I've mentioned above.
