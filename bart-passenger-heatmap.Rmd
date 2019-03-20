@@ -5,7 +5,6 @@ date: "2019-03-20"
 
 # code courtesy of R Markdown: The Definitive Guide by Xie, Allaire, and Grolemund
 # https://bookdown.org/yihui/rmarkdown/html-document.html
-runtime: shiny
 output:
   html_document:
     toc: true
@@ -361,11 +360,11 @@ The link above may not work depending on whether I have exhausted my allotment f
 
 #### Embedded in RMarkdown
 
-Finally, it is possible to embed Shiny applications in RMarkdown, as I've done below.
+Finally, it is possible to embed Shiny applications in RMarkdown.
 You can either define the entire application inline using the [`shinyApp()`](https://shiny.rstudio.com/reference/shiny/latest/shinyApp.html) function, or include the application in another directory using the [`shinyAppDir()`](https://shiny.rstudio.com/reference/shiny/latest/shinyApp.html) function.
-Since my application is split across multiple files and pulls from other data files, I have opted for the latter function.
+Since my application is split across multiple files and pulls from other data files, I would opt for the latter function.
 In addition, you have to modify the YAML at the top of the document to tell RMarkdown that Shiny content is being included.
-At the top of this RMarkdown document, I have added the following line:
+You can do so by adding the following line:
 
 ```
 runtime: shiny
@@ -384,16 +383,13 @@ install.packages(c("data.table",
 ```
 
 The code below is shown for informative purposes.
-Unfortunately, the limited width of a RMarkdown document rendered into HTML messes up the UI of my application.
-If it is unusable, I'd suggest using one of the methods listed above to run the application instead.
-Also, in order to embed the application, I have had to include the entire set of application files with my submission.
-The code below will not run unless the application files are included with this RMarkdown document in the path it expects.
+Unfortunately, you cannot export a RMarkdown with Shiny content embedded in it to one HTML file.
+You would have to host the HTML file somewhere else.
 
-```{r echo=TRUE}
+```{r echo=TRUE,eval=FALSE}
 # code courtesy of R Markdown: The Definitive Guide by Xie, Allaire, and Grolemund
 # https://bookdown.org/yihui/rmarkdown/shiny-embedded.html
-# directory string cannot be ".."
-shinyAppDir(".",
+shinyAppDir("./bart-passenger-heatmap",
             options = list(width = "100%",
                            height = 900)
 )
