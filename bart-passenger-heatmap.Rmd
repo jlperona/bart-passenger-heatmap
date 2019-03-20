@@ -45,29 +45,29 @@ However, I didn't have experience with JavaScript, so I ended up shelving the id
 
 When the final project for ECI 254 was announced, I started thinking of datasets I could use.
 Professor Niemeier had already put Shiny in my mind, since a previous student had used Shiny for their final project.
-Eventually, I remembered my previous work in MAE 253, and my heatmap idea.
+After some consideration, I remembered my previous work in MAE 253, and my heatmap idea.
 I decided that I wanted to try to implement the heatmap in Shiny and see how far I could get.
 
 ### Objective
 
-My objective was to create a Shiny app that would display BART passenger data on an actual map.
-The app should show where the BART stations and tracks were, as well as color each track by how many passengers traveled on it.
+My objective was to create a Shiny application that would display BART passenger data on an actual map.
+The application should show where the BART stations and tracks were, as well as color each track by how many passengers traveled on it.
 I also wanted users to be able to subset the input data by date and hour, so they could see how many passengers traveled at certain points in time.
 
 ### Changes Made After the Presentation
 
-I demonstrated an incomplete version of the app in class on 2019-03-15.
+I demonstrated an incomplete version of the application in class on 2019-03-15.
 Since then, I have made the following changes (as shown by [my commit history for the repository](https://github.com/jlperona/bart-passenger-heatmap/commits/master)):
 
 * Modify the sidebar to be more useful, and actually use the options that the user input rather than ignoring it.
 * Use Shiny's reactives to calculate and update the displayed data based on the user's input. I also coded it so only the tracks are re-rendered on an update, instead of the entire map.
-* Validate the user's input and display errors if there's anything wrong. This makes the app more robust. Previously, it would crash if incorrect input was given.
+* Validate the user's input and display errors if there's anything wrong. This makes the application more robust. Previously, it would crash if incorrect input was given.
 
 For more detail on the topics listed above, see the Methodology section below.
 
 ## Methodology
 
-There are two major portions to this app:
+There are two major portions to this application:
 
 1. Parsing through the input data.
 2. Displaying the parsed data in Shiny.
@@ -82,7 +82,7 @@ There are two major portions to this app:
 
 Dijkstra's / BFS
 
-### Shiny App
+### Shiny Application
 
 #### User Interface (UI)
 
@@ -142,16 +142,16 @@ I could have hosted this on a personal website, but I lack a server and the fund
 However, I found out that Shiny apps can be hosted on [*shinyapps.io*](https://www.shinyapps.io/), a website made by the creators of RStudio.
 
 I have hosted my application on *shinyapps.io* at https://jlperona.shinyapps.io/bart-passenger-heatmap/.
-This is how I demonstrated the app in my presentation.
-However, *shinyapps.io* has tiered pricing depending on usage, limiting the number of hours an app can be run per month.
+This is how I demonstrated the application in my presentation.
+However, *shinyapps.io* has tiered pricing depending on usage, limiting the number of hours an application can be run per month.
 I am using the free tier, which means that I have a very limited amount of hours.
 The link above may not work depending on whether I have exhausted my allotment for a given month.
 
 #### Embedded in RMarkdown
 
 It is possible to embed Shiny applications in RMarkdown, as I've done below.
-You can either define the entire application inline using the [`shinyApp()`](https://shiny.rstudio.com/reference/shiny/latest/shinyApp.html) function, or include the app in another directory using the [`shinyAppDir()`](https://shiny.rstudio.com/reference/shiny/latest/shinyApp.html) function.
-Since my app is split across multiple files and pulls from other data files, I have opted for the latter function.
+You can either define the entire application inline using the [`shinyApp()`](https://shiny.rstudio.com/reference/shiny/latest/shinyApp.html) function, or include the application in another directory using the [`shinyAppDir()`](https://shiny.rstudio.com/reference/shiny/latest/shinyApp.html) function.
+Since my application is split across multiple files and pulls from other data files, I have opted for the latter function.
 In addition, you have to modify the YAML at the top of the document to tell RMarkdown that Shiny content is being included.
 At the top of this RMarkdown document, I have added the following line:
 
@@ -159,13 +159,27 @@ At the top of this RMarkdown document, I have added the following line:
 runtime: shiny
 ```
 
+You will also need to install some packages to build this RMarkdown document, besides the normal ones typically used to build any RMarkdown document.
+The following code should install the necessary packages:
+
+```{r echo=TRUE,eval=FALSE}
+install.packages(c("data.table",
+                   "fasttime",
+                   "leaflet",
+                   "rgdal",
+                   "shiny")
+)
+```
+
 The code below is shown for informative purposes.
-Unfortunately, the limited width of a RMarkdown document messes up the UI of my application.
-Note that in order to embed the app, I have had to include the entire set of application files with my submission.
-The code below will not run unless the application files are included with this RMarkdown document.
+Unfortunately, the limited width of a RMarkdown document rendered into HTML messes up the UI of my application.
+If it is unusable, I'd suggest using one of the methods listed above to run the application instead.
+Also, in order to embed the application, I have had to include the entire set of application files with my submission.
+The code below will not run unless the application files are included with this RMarkdown document in the path it expects.
 
 ```{r echo=TRUE}
 # code courtesy of R Markdown: The Definitive Guide by Xie, Allaire, and Grolemund
+# directory string cannot be ".."
 # https://bookdown.org/yihui/rmarkdown/shiny-embedded.html
 shinyAppDir(".",
             options = list(width = "100%",
@@ -175,8 +189,8 @@ shinyAppDir(".",
 
 ## Conclusion
 
-I accomplished the objective I set out to achieve at the beginning of this project: a fully-functional Shiny app that shows a heatmap of the BART system using BART's own data.
-In addition, I went slightly further and made the app more robust by validating user input.
+I accomplished the objective I set out to achieve at the beginning of this project: a fully-functional Shiny application that shows a heatmap of the BART system using BART's own data.
+In addition, I went slightly further and made the application more robust by validating user input.
 
 On a more personal level, I was able to take an idea I've had in the back of my mind ever since I took MAE 253 and bring it to life.
 I also got to learn how to use Shiny to build web apps.
@@ -184,28 +198,28 @@ I'm quite happy with the final result and my growth as an R programmer in this c
 
 ### Methods for Improvement
 
-The biggest flaw in this app right now is the UI layout.
+The biggest flaw in this application right now is the UI layout.
 I am not a UI or user experience (UX) expert, but I think that the UI can definitely be improved.
 However, to my understanding, to do so in Shiny requires Cascading Style Sheets (CSS) experience, which I don't have.
 
 Another "flaw" (which I would consider a difference in opinion) is the layout of the map.
 I wanted to see the BART network overlaid on a real map.
 However, this means that some of the edges are much larger than the others.
-For example, the edges between the San Francisco stations are very difficult to see when the app is initially started.
+For example, the edges between the San Francisco stations are very difficult to see when the application is initially started.
 You have to zoom in in order to see their colors.
 A "better" heatmap would make it easier to see all the edges at once, which means that the stations would be evenly spaced.
-Due to the setup of this app, it would be relatively easy to create a different heatmap by simply changing the station GIS data.
+Due to the setup of this application, it would be relatively easy to create a different heatmap by simply changing the station GIS data.
 Since it's open source, anybody could take this as a base and create that application, if they so desire.
 
 ### Future Work
 
-There are a couple of ways that I can think of to improve this app at the moment.
+There are a couple of ways that I can think of to improve this application at the moment.
 All of these should be possible with my skill set.
 
 * Instead of calculating the sum of the number of passengers on an edge, show other summary statistics, such as the mean or median.
 * Other visualization types, such as a [chord diagram](https://en.wikipedia.org/wiki/Chord_diagram) that shows passengers' final destinations from a given source station.
 
-I have another idea for future work, which isn't related to improving my app.
+I have another idea for future work, which isn't related to improving my application.
 I will admit that it was somewhat difficult to get started with Shiny.
 [This blog post on DataScience.com](https://www.datascience.com/blog/beginners-guide-to-shiny-and-leaflet-for-interactive-mapping) was the most helpful thing for getting me off the ground, but I was doing some things differently than them, which complicated matters.
 That being said, I spent most of my time attempting to figure out a few more advanced pieces of Shiny, such as reactives and validating user input.
