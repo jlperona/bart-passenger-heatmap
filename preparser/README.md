@@ -49,7 +49,9 @@ This is a Python 3 script.
 ### Dependencies
 
 The script uses `networkx` to parse the input graph.
-It can be found on `pip`, but feel free to install it in any way you wish.
+It can be found on `pip`.
+
+The script has been tested against `flake8` and `mypy`, both of which can also be installed on `pip`.
 
 ## Usage
 
