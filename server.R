@@ -105,7 +105,7 @@ server <- function(input, output, session)
 
     # check if both dates are valid
     # display pop-up to warn use and don't re-render track if this is the case
-    if(is.na(startDate) | is.na(endDate)) {
+    if (is.na(startDate) | is.na(endDate)) {
       showModal(modalDialog(
         title = "Error",
         "Both dates must be in the format YYYY-MM-DD.",
@@ -115,7 +115,7 @@ server <- function(input, output, session)
     }
     # check if end date is earlier than start date
     # display pop-up to warn user and don't re-render track if this is the case
-    else if(endDate < startDate) {
+    else if (endDate < startDate) {
       showModal(modalDialog(
         title = "Error",
         "The end date must be the same as or after the starting date.",
@@ -125,7 +125,7 @@ server <- function(input, output, session)
     }
     # check if start date is greater than the last day in the data set
     # display pop-up to warn user and don't re-render track if this is the case
-    else if(startDate > maxDate) {
+    else if (startDate > maxDate) {
       showModal(modalDialog(
         title = "Error",
         paste("The last day in the data set is ", as.character(maxDate),
@@ -137,7 +137,7 @@ server <- function(input, output, session)
     }
     # check if end date is less than the first day in the data set
     # display pop-up to warn user and don't re-render track if this is the case
-    else if(endDate < minDate) {
+    else if (endDate < minDate) {
       showModal(modalDialog(
         title = "Error",
         paste("The first day in the data set is ", as.character(minDate),
@@ -149,7 +149,7 @@ server <- function(input, output, session)
     }
     # check if there are no times in time range
     # display pop-up to warn user and don't re-render track if this is the case
-    else if(is.null(input$timeRange)) {
+    else if (is.null(input$timeRange)) {
       showModal(modalDialog(
         title = "Error",
         "You must select at least one hour.",
@@ -161,7 +161,7 @@ server <- function(input, output, session)
     else {
       # check if start date is earlier than first day in the data set
       # warn user but re-render track since it won't make a difference
-      if(startDate < minDate) {
+      if (startDate < minDate) {
         showModal(modalDialog(
           title = "Warning",
           paste("The first day in the data set is ", as.character(minDate),
@@ -172,7 +172,7 @@ server <- function(input, output, session)
       }
       # check if end date is later than last day in the data set
       # warn user but re-render track since it won't make a difference
-      else if(endDate > maxDate) {
+      else if (endDate > maxDate) {
         showModal(modalDialog(
           title = "Warning",
           paste("The last day in the data set is ", as.character(maxDate),

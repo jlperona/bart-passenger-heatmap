@@ -12,10 +12,20 @@ tracks <- readOGR(dsn = "./geojson/tracks.geojson")
 tracks@data[] <- lapply(tracks@data, as.character)
 tracks@data$id <- as.integer(tracks@data$id)
 
-# bring in soo data, fix column names
-soo <- fread("./data/date-hour-soo-dest-all.csv",
-             header = FALSE,
-             stringsAsFactors = FALSE)
+# bring in soo data by year in order
+filecount <- 0
+for (filename in sort(dir("./data", "*.csv", full.names = TRUE))) {
+  filecount <- filecount + 1
+  
+  if (filecount == 1) {
+    soo <- fread(filename, header = FALSE, stringsAsFactors = FALSE)
+  }
+  else {
+    soo <- rbind(soo, fread(filename, header = FALSE, stringsAsFactors = FALSE))
+  }  
+}
+
+# fix soo data column names
 colnames(soo) <- c("date", "hour", "origin", "destination", "count")
 
 # convert date using fastPOSIXct()
