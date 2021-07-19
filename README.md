@@ -1,8 +1,17 @@
 # BART Passenger Heatmap
 
-Shiny app for displaying BART hourly origin-destination data.
+Shiny app for displaying BART hourly origin-destination data from 2011 - June 2021.
 You can find a hosted version of this on [shinyapps.io](https://jlperona.shinyapps.io/bart-passenger-heatmap/).
 (If it's down, it's probably because my free tier was exhausted.)
+
+## Caveat
+
+**Note:** there are some missing tracks.
+The passenger data is current up to June 2021, and all the stations up to June 2021 display.
+However, the GeoJSON for the tracks needs to be updated for the Berryessa extension.
+The data is calculated for them, but they won't display until polylines are added.
+
+When I've rebuilt the GeoJSON, I'll remove this message.
 
 ## Background
 

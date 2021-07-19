@@ -37,7 +37,7 @@ It does the following:
 
 This could have been done in Shiny using `igraph`, but it took way too long to parse.
 One day's worth of data took 5 minutes.
-Using the preparser took about an hour to run through 8 years of data, but the Shiny app now loads within seconds.
+Using the preparser took about 30 minutes to run on 10 years' worth of data, but the Shiny app now loads within seconds.
 The great thing about the preparser is that it's easy to re-run if BART updates their data.
 
 ## Python
@@ -50,6 +50,13 @@ This is a Python 3 script.
 
 The script uses `networkx` to parse the input graph.
 It can be found on `pip`.
+If you'd like to set up a virtual environment, the typical code to do so is below:
+
+```
+python3 -m venv env
+source env/bin/activate
+python3 -m pip install -r requirements.txt
+```
 
 The script has been tested against `flake8` and `mypy`, both of which can also be installed on `pip`.
 
