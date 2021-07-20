@@ -1,8 +1,15 @@
 # BART Passenger Heatmap
 
 Shiny app for displaying BART hourly origin-destination data from 2011 - June 2021.
-You can find a hosted version of this on [shinyapps.io](https://jlperona.shinyapps.io/bart-passenger-heatmap/).
-(If it's down, it's probably because my free tier was exhausted.)
+
+Note that there used to be a *shinyapps.io* deployment example.
+However, it uses too much space now for the free tier, so it's been taken down.
+You can run direct from RStudio with the following:
+
+```
+library(shiny)
+shiny::runGitHub("bart-passenger-heatmap", "jlperona")
+```
 
 ## Background
 

@@ -1,5 +1,8 @@
 # pre-processing that only needs to be done once
 
+# library options and loading
+options("rgdal_show_exportToProj4_warnings" = "none")
+
 library(data.table) # fast CSV import using fread()
 library(fasttime)   # needed for fastPOSIXct() to convert dates quickly
 library(rgdal)      # needed for readOGR() to import spatial data
