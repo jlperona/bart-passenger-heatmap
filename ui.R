@@ -1,4 +1,4 @@
-# code to create the rendering
+# code for rendering the application
 
 library(leaflet) # base for shiny map display
 

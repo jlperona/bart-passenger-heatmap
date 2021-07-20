@@ -10,22 +10,15 @@ stations <- readOGR(dsn = "./geojson/stations.geojson")
 # bring in track data and convert columns
 tracks <- readOGR(dsn = "./geojson/tracks.geojson")
 tracks@data[] <- lapply(tracks@data, as.character)
-tracks@data$id <- as.integer(tracks@data$id)
+tracks@data$id <- 1:nrow(tracks@data)
 
 # bring in soo data by year in order
-filecount <- 0
+soo <- data.frame(matrix(ncol = 5, nrow = 0), stringsAsFactors = FALSE)
 for (filename in sort(dir("./data", "*.csv", full.names = TRUE))) {
-  filecount <- filecount + 1
-  
-  if (filecount == 1) {
-    soo <- fread(filename, header = FALSE, stringsAsFactors = FALSE)
-  }
-  else {
-    soo <- rbind(soo, fread(filename, header = FALSE, stringsAsFactors = FALSE))
-  }  
+  soo <- rbind(soo, fread(filename, header = FALSE, stringsAsFactors = FALSE))
 }
 
-# fix soo data column names
+# fix column names
 colnames(soo) <- c("date", "hour", "origin", "destination", "count")
 
 # convert date using fastPOSIXct()

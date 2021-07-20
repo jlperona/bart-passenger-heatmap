@@ -85,10 +85,12 @@ server <- function(input, output, session)
                         by.x = "station2",
                         by.y = "abbreviation")
 
-    # order by ID
-    tracks@data <- trackCount[order(trackCount$id), ]
-    rownames(tracks@data) <- 1:nrow(tracks@data)
-
+    # merge passenger counts and order by ID
+    tracks@data <- merge(x = tracks@data,
+                         y = trackCount,
+                         by = c("name", "station1", "station2", "id"))
+    tracks@data <- tracks@data[order(tracks@data$id), ]
+    
     # return final result
     tracks
   })
