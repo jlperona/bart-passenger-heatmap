@@ -2,15 +2,6 @@
 
 The Shiny app expects both `stations.geojson` and `tracks.geojson` to exist in this folder.
 
-## Caveat
-
-**Note:** there are some missing tracks.
-The passenger data is current up to June 2021, and all the stations up to June 2021 display.
-However, the GeoJSON for the tracks needs to be updated for the Berryessa extension.
-The data is calculated for them, but they won't display until polylines are added.
-
-When I've fixed the GeoJSON, I'll remove this message.
-
 ## `stations.geojson`
 
 This file is a GeoJSON file that contains the station locations.
@@ -18,8 +9,15 @@ This file is a GeoJSON file that contains the station locations.
 ### Creation
 
 The original data was sourced from the "stations and lines" KML file provided on [BART's website](https://www.bart.gov/schedules/developers/geo).
-I originally imported those files into GIS software and saved them into GeoJSON.
-However, I've made edits since then to remove extraneous data and add the station abbreviations.
+Below is the methodology with QGIS:
+
+1. Import the KML file into QGIS and export the station layer into GeoJSON. It's easier to edit GeoJSON in QGIS.
+2. Re-import the GeoJSON.
+3. Remove a couple of features
+  * a transfer stations for Oakland International Airport
+  * a transfer station for eBART at Pittsburg/Bay Point
+4. Remove extra columns, and add a column for station abbreviations.
+5. Export the final GeoJSON.
 
 ### Reproducibility
 
@@ -36,13 +34,23 @@ The original data was sourced from the "stations and lines" KML file provided on
 The problem with that data is that the tracks are listed via route, so there's one polyline for an entire route.
 In order to color each segment separately with the number of passengers, we need separate pieces of track between stations.
 I was unable to find this data anywhere else, so I made it myself.
-Hence, this GeoJSON file has one polyline from station to station.
+Hence, this GeoJSON file has one polyline per station.
 
-To create this file, I imported the track data from the KML file above into GIS software (ArcGIS, QGIS).
-I then split the polylines for the routes by the stations into separate segments, using the station points themselves to split it.
-Due to the way it was split, I had to merge some pieces back together, and remove some duplicates.
-Finally, I exported the data to GeoJSON.
-I also removed some extraneous data, and renamed track segments to be more descriptive.
+Below is the methodology with QGIS:
+
+1. Import the KML file into QGIS and export the track layer into GeoJSON. It's easier to edit GeoJSON in QGIS.
+2. Re-import the GeoJSON.
+3. Using QGIS's Split Features tool, cut off the extra pieces of track past the end of some lines.
+4. Painstakingly split the polylines manually at stations with the Split Feature tool.
+  * The majority of these are easy, as the polylines in the original layer are pretty long.
+  * For places where there are multiple connecting stations, duplicate, split, and merge as necessary to get a single polyline to each of the other stations.
+4. Remove all other columns in the feature table.
+5. Add columns and data for `station1`, `station2`, and rename each feature appropriately.
+6. Export the final GeoJSON.
+
+Using *Split Lines at Points* tools makes the splitting process faster at the cost of accuracy and more re-merging features.
+There's no automated way to handle the multiple connecting stations problem; that has to be done manually.
+Adding data needs to be done manually as well.
 
 ### Reproducibility
 

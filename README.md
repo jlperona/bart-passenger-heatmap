@@ -4,15 +4,6 @@ Shiny app for displaying BART hourly origin-destination data from 2011 - June 20
 You can find a hosted version of this on [shinyapps.io](https://jlperona.shinyapps.io/bart-passenger-heatmap/).
 (If it's down, it's probably because my free tier was exhausted.)
 
-## Caveat
-
-**Note:** there are some missing tracks.
-The passenger data is current up to June 2021, and all the stations up to June 2021 display.
-However, the GeoJSON for the tracks needs to be updated for the Berryessa extension.
-The data is calculated for them, but they won't display until polylines are added.
-
-When I've rebuilt the GeoJSON, I'll remove this message.
-
 ## Background
 
 I created this application for a class that I took while in graduate school.
@@ -115,6 +106,7 @@ A few things that I became very familiar with over the course of working on this
 * Make sure to check that your strings are imported as characters, and not factors, if that's necessary for your logic. I spent a long time debugging that issue.
 * Make sure you didn't accidentally overwrite your input data. Sometimes you accidentally modify it, even when you didn't mean to.
 * Validating your data is important. I knew that from prior experience, but it was admittedly funny when I crashed the app by selecting no hours to display.
+* Good comments are incredibly helpful when coming back to this project after 2 years.
 
 ## Future
 

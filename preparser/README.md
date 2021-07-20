@@ -63,7 +63,7 @@ The script has been tested against `flake8` and `mypy`, both of which can also b
 ## Usage
 
 ```
-python3 bart-soo-preparser.py [-h] [--flags] input.[gexf,net] output.csv soo1.csv soo2.csv ...
+python3 bart-soo-preparser.py [-h] [--flags] input.[gexf,net] output.csv input1.csv ...
 ```
 
 ### Flags
@@ -82,11 +82,7 @@ By default, the script defaults to an undirected graph.
 
 The representation of the BART network that serves as the basis to calculate shortest paths.
 An example file has been provided at `network/bart-abbreviations.net`.
-
 Note that this file will need to be modified to keep up with expansions in the BART network.
-This file can be considered to be a small modification to [`bart.net`](https://github.com/jlperona/bart-hourly-dataset-parser/blob/master/network/bart.net) in `bart-hourly-dataset-parser`.
-I modified it to use the 4-letter station abbreviations to make it easier to index in R.
-Thus, changes to that file should be copied here.
 
 The following file formats are supported:
 
@@ -101,7 +97,7 @@ Adding these would be fairly simple.
 The CSV file which output is written to.
 For what this file looks like, see the [data README](../data/README.md).
 
-#### `soo1.csv soo2.csv ...`
+#### `input1.csv ...`
 
 The CSV files provided by BART on [their website](https://www.bart.gov/about/reports/ridership).
 You can provide as many as you want.
