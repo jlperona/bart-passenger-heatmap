@@ -13,9 +13,9 @@ Below is the methodology with QGIS:
 
 1. Import the KML file into QGIS and export the station layer into GeoJSON. It's easier to edit GeoJSON in QGIS.
 2. Re-import the GeoJSON.
-3. Remove a couple of features
-  * a transfer stations for Oakland International Airport
-  * a transfer station for eBART at Pittsburg/Bay Point
+3. Remove a couple of features:
+    * a transfer station for Oakland International Airport
+    * a transfer station for eBART at Pittsburg/Bay Point
 4. Remove extra columns, and add a column for station abbreviations.
 5. Export the final GeoJSON.
 
@@ -42,8 +42,8 @@ Below is the methodology with QGIS:
 2. Re-import the GeoJSON.
 3. Using QGIS's Split Features tool, cut off the extra pieces of track past the end of some lines.
 4. Painstakingly split the polylines manually at stations with the Split Feature tool.
-  * The majority of these are easy, as the polylines in the original layer are pretty long.
-  * For places where there are multiple connecting stations, duplicate, split, and merge as necessary to get a single polyline to each of the other stations.
+    * The majority of these are easy, as the polylines in the original layer are pretty long.
+    * For places where there are multiple connecting stations: duplicate, split, and merge as necessary to get a single polyline to each of the other stations.
 4. Remove all other columns in the feature table.
 5. Add columns and data for `station1`, `station2`, and rename each feature appropriately.
 6. Export the final GeoJSON.
